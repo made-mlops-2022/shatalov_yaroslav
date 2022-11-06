@@ -6,6 +6,10 @@ from modules.data_preparing import make_train_val_dataset
 from modules.models import make_predictions_with_cls, fit_cls
 
 def init_logging(log_lvl=logging.DEBUG, log_file_path=None):
+    log_folders = log_file_path.split('\\')
+    log_folder_path = r'\\'.join(log_folders[:-1])
+    if not os.path.exists(log_folder_path):
+        os.makedirs(log_folder_path)
     handlers = [logging.StreamHandler()]
     if log_file_path is not None:
         file_handler = logging.FileHandler(log_file_path)
@@ -33,6 +37,8 @@ def make_datasets(df_file_path: str, out_folder: str):
         logging.error(f'An exception while creating dataset: {str(ex)}')
     
     logging.info('==Writing datasets==')
+    if not os.path.exists(out_folder):
+        os.makedirs(out_folder)
     try:
         train_df.to_csv(os.path.join(out_folder, 'train_df.csv'), index=False)
         train_y.to_csv(os.path.join(out_folder, 'train_y.csv'), index=False)
@@ -48,6 +54,10 @@ def make_datasets(df_file_path: str, out_folder: str):
 @click.option('--cls-file-path', default='models\\cls.sav', help='File path for models')
 def fit_model(train_df_file_path: str, train_y_file_path: str, cls_file_path: str):
     logging.info('==Start of fitting==')
+    cls_folders = cls_file_path.split('\\')
+    cls_folder_path = r'\\'.join(cls_folders[:-1])
+    if not os.path.exists(cls_folder_path):
+        os.makedirs(cls_folder_path)
     try:
         fit_cls(train_df_file_path, train_y_file_path, cls_file_path)
     except Exception as ex:
@@ -61,6 +71,10 @@ def fit_model(train_df_file_path: str, train_y_file_path: str, cls_file_path: st
 @click.option('--res-predictions-file', default='data\\predictions.csv', help='File path for predictions')
 def make_predictions(val_df_file_path: str, cls_file_path: str, res_predictions_file: str):
     logging.info('==Start of predicting process==')
+    pred_folders = res_predictions_file.split('\\')
+    pred_folder_path = r'\\'.join(pred_folders[:-1])
+    if not os.path.exists(pred_folder_path):
+        os.makedirs(pred_folder_path)
     try:
         make_predictions_with_cls(val_df_file_path, cls_file_path, res_predictions_file)
     except Exception as ex:
